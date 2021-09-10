@@ -5,21 +5,31 @@ import styles from "./Window.module.scss";
 
 let REFRESH_TIME = 0;
 
-const Window: React.FC = ({id}) => {
-  const [server, setServer] = React.useState({id, status: true, load: 0});
+interface WindowProp {
+  id: number;
+}
+
+type ServerData = {
+  id: number,
+  load: number
+}
+
+const Window: React.FC = ({ id }: WindowProp) => {
+  const [server, setServer] = React.useState({ id, status: true, load: 0 });
 
   React.useEffect(() => {
     if (server.status === false) return;
 
     const intervalId = setInterval(() => {
-      const fetchApi = async () => {
-        const res = await fetch(`http://localhost:8000/status/${server.id}`);
-        const data = await res.json();
+      const fetchData = async () => {
+        const data: ServerData = await (
+          await fetch(`http://localhost:8000/status/${server.id}`)
+        ).json();
 
-        setServer((prev) => ({...prev, ...data}));
+        setServer((prev) => ({ ...prev, ...data }));
       };
 
-      fetchApi();
+      fetchData();
       REFRESH_TIME = 5000;
     }, REFRESH_TIME);
 
@@ -28,7 +38,7 @@ const Window: React.FC = ({id}) => {
 
   const handleClick = () => {
     REFRESH_TIME = 0;
-    setServer((prev) => ({...prev, load: 0, status: !prev.status}));
+    setServer((prev) => ({ ...prev, load: 0, status: !prev.status }));
   };
 
   return (
@@ -44,11 +54,24 @@ const Window: React.FC = ({id}) => {
         <div className="title-bar-text">Server #{server.id}</div>
       </div>
       <div className={styles.windowBody}>
-        <img alt="server picture" className={styles.picture} src={server.status ? "../src/assets/pc-on.gif" : "../src/assets/pc-off.png"}  />
+        <img
+          alt="server picture"
+          className={styles.picture}
+          src={
+            server.status
+              ? "../src/assets/pc-on.gif"
+              : "../src/assets/pc-off.png"
+          }
+        />
       </div>
       <div className={`${styles.statusBar} window-status-bar`}>
-        <span className="status-bar-field">Status: {server.status ? "ON" : "OFF"}</span>
-        <span className={`${styles.statusButton} status-bar-field`} onClick={handleClick}>
+        <span className="status-bar-field">
+          Status: {server.status ? "ON" : "OFF"}
+        </span>
+        <span
+          className={`${styles.statusButton} status-bar-field`}
+          onClick={handleClick}
+        >
           {server.status ? "shut down" : "turn on"}
         </span>
         <span className="status-bar-field">CPU Usage: {server.load}%</span>
