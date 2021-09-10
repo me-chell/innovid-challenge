@@ -1,0 +1,20 @@
+.windowBody {
+  height: 15rem;
+}
+
+.statusBar {
+  display: flex;
+
+  span {
+    width: 100%
+  }
+}
+
+.statusButton {
+  cursor: pointer;
+}
+
+.picture {
+  height: 100%;
+  padding: 1rem;
+}
